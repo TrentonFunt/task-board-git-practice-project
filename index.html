@@ -113,9 +113,23 @@
         <div class="header">
             <h1>Task Board</h1>
         </div>
+        <div class="filter">
+            <label for="categoryFilter">Filter by Category:</label>
+            <select id="categoryFilter">
+                <option value="">All Categories</option>
+                <option value="work">Work</option>
+                <option value="personal">Personal</option>
+                <option value="other">Other</option>
+            </select>
+        </div>
         
         <div class="add-task">
             <input type="text" id="taskInput" placeholder="Enter a new task">
+            <select id="taskCategory">
+                <option value="work">Work</option>
+                <option value="personal">Personal</option>
+                <option value="other">Other</option>
+            </select>
             <button id="addButton">Add Task</button>
         </div>
 
@@ -138,10 +152,10 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             let tasks = [
-                { id: 1, title: 'Learn Git Basics', status: 'todo' },
-                { id: 2, title: 'Create First PR', status: 'in-progress' },
-                { id: 3, title: 'Review Code', status: 'done' },
-                { id: 4, title: 'Tiwalade Adegoke', status: 'done' }
+                { id: 1, title: 'Learn Git Basics', status: 'todo', category: 'work' },
+                { id: 2, title: 'Create First PR', status: 'in-progress', category:'work' },
+                { id: 3, title: 'Review Code', status: 'done', category:'work' },
+                { id: 4, title: 'Tiwalade Adegoke', status: 'done', category:'personal' }
             ];
 
             function createTaskElement(task) {
@@ -149,6 +163,7 @@
                 taskDiv.className = 'task';
                 taskDiv.innerHTML = `
                     <span>${task.title}</span>
+                    <span class="category">(${task.category})</span>
                     <div>
                         <select onchange="moveTask(${task.id}, this.value)">
                             <option value="todo" ${task.status === 'todo' ? 'selected' : ''}>To Do</option>
@@ -187,28 +202,26 @@
             };
 
             // Add task event listener
-            document.getElementById('addButton').addEventListener('click', function() {
+            document.getElementById('addButton').addEventListener('click', function () {
                 const input = document.getElementById('taskInput');
+                const categorySelect = document.getElementById('taskCategory');
                 const title = input.value.trim();
-                
+                const category = categorySelect.value;
+
                 if (title) {
                     const newTask = {
                         id: tasks.length + 1,
                         title: title,
-                        status: 'todo'
+                        status: 'todo',
+                        category: category
                     };
                     tasks.push(newTask);
                     input.value = '';
                     renderTasks();
                 }
             });
-
-            // Add enter key support for new tasks
-            document.getElementById('taskInput').addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    document.getElementById('addButton').click();
-                }
-            });
+            // Add category filter listener
+            document.getElementById('categoryFilter').addEventListener('change', renderTasks);
 
             // Initial render
             renderTasks();
